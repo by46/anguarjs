@@ -1,0 +1,202 @@
+<html ng-app="Demo">
+<head>
+    <title>chapter 7 - filter</title>
+    <script type="text/javascript" src="angular.1.4.6.min.js"></script>
+    <style type="text/css">
+        input.ng-invalid {
+            border: 1px solid red;
+        }
+        input.ng-valid {
+            border: 1px solid green;
+        }
+        input.ng-dirty{
+            background-color: gray;
+        }
+        input.ng-pristine{
+            color: blue;
+        }
+    </style>
+
+</head>
+<body >
+<div ng-controller="MyController">
+    <h2>{{ fullname | limitTo:-5 | limitTo:1}}</h2>
+    <h2>{{ price | number:2 }}</h2>
+    <h2>{{ fullname | capitalize }}</h2>
+    <form name="form" novalidate>
+        <label name="email">Your email</label>
+        <input type="email" name="email"
+            ng-model="user.email"
+            placeholder="Email Address"
+            required
+            ng-minlength="5"
+            ng-maxlength="20"
+            ng-pattern="/[a-zA-Z]/">
+        <label name="age">Age</label>
+        <input type="number" name="age"
+        ng-model="user.age">
+
+        <label name="high">High</label>
+        <input type="text" name="high" ng-model='user.high' one-to-ten>
+
+        <label name="homepage">Facebook</label>
+        <input type="url" name="homepage" ng-model="user.facebook_url">
+        <button ng-click="on_increase_age_click()">Click me</button>
+    </form>
+    <form name="signup_form" novalidate ng-submit="signupForm()">
+        <fieldset>
+            <legend>Sign Up</legend>
+            <div class="row">
+                <div class="large-12 columns">
+                    <label>Your name</label>
+                    <input type="text" name="name"
+                    placeholder="Name"
+                    ng-model="signup.name"
+                    ng-class="{error: signup_form.name.$dirty && signup_form.name.$invalid}"
+                    ng-minlength="3"
+                    ng-maxlength="20"
+                    required ng-focus
+                    ensure-unique="name">
+                    <div class="error"
+                    ng-show="signup_form.name.$dirty && signup_form.name.$invalid && !signup_form.name.$focused">
+                        <small ng-show="signup_form.name.$error.required">
+                            Your name is required
+                        </small>
+                        <small class="error"
+                        ng-show="signup_form.name.$error.minlength">
+                            Your name is required to be at least 3 characters
+                        </small> 
+                        <small class="error"
+                        ng-show="signup_form.name.$error.maxlength">
+                            Your name can not be longer than 20 characters.
+                        </small>
+                    </div>
+                    <div class="error"
+                    ng-messages="signup_form.name.$error">
+                        <small ng-message="required">Your name is  required</small>
+                        <small ng-message="minlength">Your name is required to be at least 3 characters</small>
+                        <small ng-message="maxlength">Your name can not be longer than 20 characters.</small>
+                    </div>
+                </div>
+            </div>
+            <div>
+             {{signup_form.name.$error}}
+             {{signup | json}}
+            </div>
+            <button type="submit" class="button radius">Submit</button>
+        </fieldset>
+    </form>
+    <div>
+    <ul>
+        <li>email $pristine: {{form.email.$pristine}}</li>
+        <li>email $dirty: {{form.email.$dirty}}</li>
+        <li>email $valid: {{form.email.$valid}}</li>
+        <li>email $invalid: {{form.email.$invalid}}</li>
+        <li>email $error: {{form.email.$error}}</li>
+        <li>age $pristine: {{form.age.$pristine}}</li>
+        <li>age $dirty: {{form.age.$dirty}}</li>
+        <li>age $valid: {{form.age.$valid}}</li>
+        <li>age $invalid: {{form.age.$invalid}}</li>
+        <li>age $error: {{form.age.$error}}</li>
+    </ul>
+        
+    </div>
+    <div>
+        {{ user | json}}
+    </div>
+</div>
+</body>
+    <script type="text/javascript">
+
+    var app = angular.module('Demo', ['ngMessages']);
+
+    app.controller('MyController', function($scope){
+        $scope.fullname = 'benjamin.c.yan';
+        $scope.price = 123.45678901;
+        $scope.user = {age:21};
+
+        $scope.on_increase_age_click = function(){
+            $scope.user.high=3000;
+        }
+        $scope.signupForm = function(){
+            if($scope.signup_form.$valid){
+                console.log('submit normal');
+            }else{
+                console.log('submit invalid');
+                $scope.signup_form.submitted = true;
+            }
+        }
+    })
+    .filter('capitalize', function(){
+        return function(input){
+            if(input) {
+                return input[0].toUpperCase() + input.slice(1);
+            }
+        };
+    })
+    .directive('oneToTen', function($filter){
+        return {
+            require: '?ngModel',
+            link: function(scope, element, attrs, ngModel){
+                if(!ngModel){
+                    return ;
+                }
+                ngModel.$parsers.unshift(function(viewValue){
+                    var i = parseInt(viewValue);
+                    if(i>0 && i <8000){
+                        ngModel.$setValidity('oneToTen', true);
+                        return viewValue;
+                    } else {
+                        ngModel.$setValidity('oneToTen', false);
+                        return undefined;
+                    }
+                });
+                ngModel.$formatters.unshift(function(v){
+                    return $filter('number')(v);
+                });
+            }
+        };
+    })
+    .directive('ensureUnique', function(){        
+        return {
+            require: '?ngModel',
+            link: function(scope, element, attrs, model){
+                scope.$watch(attrs.ngModel, function(newValue){
+                    if(!newValue){
+                        return;
+                    }
+                    model.$setValidity('unqiue', newValue==='benjamin');
+
+                });
+            }
+        }
+    })
+    .directive('ngFocus', function($timeout){
+        return {
+            restrict: 'A',
+            require:'ngModel',
+            link: function(scope, element, attrs, model){
+                var FOCUS_CLASS = 'ng-focused';
+                model.$focused = false;
+                element.bind('focus', function(evt){
+                    element.addClass(FOCUS_CLASS);
+                    $timeout(function(){
+                        scope.$apply(function(){
+                            model.$focused = true;
+                        })
+                    }, 1);
+                })
+                .bind('blur', function(evt){
+                    element.removeClass(FOCUS_CLASS);
+                    $timeout(function(){
+                        scope.$apply(function(){
+                            model.$focused = false;
+                        })
+                    }, 1);
+                });
+            }
+        }
+    });
+
+    </script>
+</html> 

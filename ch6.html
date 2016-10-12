@@ -1,0 +1,60 @@
+<html ng-app="Demo">
+<head>
+    <title>chapter 6 - expression</title>
+    <script type="text/javascript" src="angular.1.4.6.min.js"></script>
+
+</head>
+<body >
+<div ng-controller="MyController">
+    <input type="text" ng-model='expr' placeholder="Enter Your expression" />
+    <h2>{{parseValue}}</h2>
+
+    <input type="email" ng-model='to' placeholder="Recipient">
+    <textarea ng-model='emailBody'></textarea>
+    <pre>{{previewText}}</pre>
+</div>
+</body>
+    <script type="text/javascript">
+    angular.module('emailParser', [])
+    .factory('EmailParser', function($interpolate){
+        return {
+            parse: function(text, context){
+                var template = $interpolate(text);
+                return template(context);
+            }
+        }
+    });
+
+    var app = angular.module('Demo', ['emailParser']);
+
+    app.controller('MyController', function($scope, $parse,$timeout, $interpolate, EmailParser){
+        $scope.address = 'undefined2';
+        $scope.name = 'benjamin';
+        $scope.sex = 'male';
+        $scope.to = 'benjamin'
+        $scope.$watch('expr', function(newValue, oldValue, scope){
+            if(newValue !== oldValue){
+                $timeout(function(){
+                    $scope.$apply(function () {
+                        $scope.parseValue = EmailParser.parse(body, {to:$scope.to})
+                    })
+                },1);
+            }
+        });
+
+        $scope.$watch('emailBody', function (body) {
+            if(body){
+                var template = $interpolate(body);
+                $timeout(function(){
+                    $scope.$apply(function(){
+                        $scope.previewText = template({to:$scope.to});        
+                    })
+                }, 1);
+                
+            }
+        })
+
+    });
+
+    </script>
+</html> 

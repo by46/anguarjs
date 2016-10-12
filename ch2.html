@@ -1,0 +1,41 @@
+<html ng-app="Demo">
+<head>
+    <title>chapter 2</title>
+    <script type="text/javascript" src="angular.1.4.6.min.js"></script>
+
+</head>
+<body >
+<div ng-controller="MyController">
+	<input type="text" ng-model="person.name" placeholder="Your name">
+	<h1>Hello {{person.name}}</h1>
+</div>
+<div ng-controller='ParentController'>
+    <div ng-controller='ChildController'>
+        <a href='#' ng-click='sayHello()' > click me!</a>
+    </div>
+    {{person}}
+</div>
+</body>
+    <script type="text/javascript">
+    var app = angular.module('Demo', []);
+    app.controller('MyController', function($scope, $timeout){
+            function updateClock (){
+                $scope.clock = new Date();
+                $timeout(function(){
+                    updateClock();   
+                }, 1000);
+            }
+
+            updateClock();
+        })
+    .controller('ParentController', function($scope){
+        $scope.person = {};
+    })
+    .controller('ChildController', function($scope){
+        $scope.sayHello = function(){
+            $scope.person.name = 'benjamin';
+        }
+    });
+
+    </script>
+</html>
