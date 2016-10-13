@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-controller="CompileCtrl">
+        <div ng-form test>
+            <input ng-model='a' type='email' />
+            <button ng-click="do()">Show</button>
+        </div>
+        <form name='f'>
+
+            <input type="my" ng-model='b' />
+            <button ng-click="show()">Show</button>
+        </form>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+            angular.module('Demo', []);
+
+            angular.module('Demo')
+            .controller('CompileCtrl', function($scope, $compile, $element) {
+                $scope.show = function(){
+                    console.log($scope.f);
+                }
+
+            })
+            .directive('test', function(){
+                var link = function($scope, $element, $attrs, $ctrl){
+                    $scope.do = function(){
+                        console.log($ctrl.$pristine);
+                        console.log($ctrl.$dirty);
+                        console.log($ctrl.$valid);
+                        console.log($ctrl.$invalid);
+                        console.log($ctrl.$error);
+                    }
+                }
+                return {compile: function(){return link;}, 
+                    require:'form',
+                    retrict:'A'};
+            })
+            .directive('input', function(){
+                var link = function($scope, $element, $attrs, $ctrl){
+                    console.log($attrs.type);
+                    if($attrs.type == 'email'){
+                    var validator = function(v){
+                        if(v == '123'){
+                            $ctrl.$setValidity('my', true);
+                            return v;
+                        } else {
+                            $ctrl.$setValidity('my', false);
+                            return undefined;
+                        }
+                    }
+                    $ctrl.$formatters.push(validator);
+                    $ctrl.$parsers.push(validator);
+                }
+                }
+                return {
+                    compile: function(){return link;},
+                    require:'ngModel',
+                    restrict: 'E'
+                };
+            });
+        </script>
+
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-controller="CompileCtrl"></div>
+
+</body>
+
+<script type="text/javascript">
+            angular.module('Demo', []);
+
+            angular.module('Demo')
+            .controller('CompileCtrl', function($scope, $compile, $element) {
+                var s = "<more>123</more>";
+                var link = $compile(s, function(a, b){return a + b});
+                var node = link($scope);
+                $element.append(node);
+            })
+            .directive('more', function(){
+                var func = function(element, attrs, transclude){
+                    var sum = transclude(1, 2);
+                    console.log(sum);
+                    console.log(element);
+                    element.empty();
+                    element.append(sum)
+                }
+                return {compile: func, 
+                    retrict:'E'};
+            });
+        </script>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-controller="CompileCtrl">
+        <input type='text' ng-model='a' test/>
+        <button ng-click='show(a)'>Modified</button>
+
+    </div>
+
+</body>
+
+<script type="text/javascript">
+            angular.module('Demo', []);
+
+            angular.module('Demo')
+            .controller('CompileCtrl', function($scope, $compile, $element) {
+                $scope.a = [];
+                $scope.a = [1,2,3];
+                
+                $scope.show = function(v){
+                console.log(v);
+                }
+            })
+            .directive('test', function(){
+                var link = function($scope, $element, $attrs, $ctrl){
+                    $ctrl.$formatters.push(function(value){
+                        return value.join(',');
+                    });
+                    $ctrl.$parsers.push(function(value){
+                        return value.split(',');
+                    });
+                }
+                return {compile: function(){return link;}, 
+                    require:'ngModel',
+                    retrict:'E'};
+            });
+        </script>
+
+</html>

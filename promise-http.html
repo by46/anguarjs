@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body ng-controller="DemoCtrl">
+    <input />
+</body>
+
+<script type="text/javascript">
+    function TaskPump(){
+        this.tasks = new Array();
+    }
+    TaskPump.prototype.push = function(task){
+        this.tasks.push(task)
+    }
+    TaskPump.prototype.pop = function(){
+        return this.tasks.pop();
+    }
+
+   angular.module('Demo', []);
+
+   angular.module('Demo')
+   .controller('DemoCtrl', function($scope, ngPromise){
+       for(var i=0; i<10;i++){
+           ngPromise.send('benjamin'+i)
+           .then(function(response){
+               console.log(response);
+           });
+       }
+       
+   })
+   .factory('ngPromise', function($http, $q, $timeout){
+       var pump = new TaskPump();
+        function loop() {
+                var task = pump.pop();
+                if (task === undefined) {
+                    $timeout(loop, 2000);
+                    return;
+                }
+
+                $http(task.params)
+                    .then(function successCallback(response) {
+                        $timeout(loop, 1);
+                        return task.deferred.resolve(response);
+                    }, function failedCallback() {
+                        $timeout(loop, 1);
+                        return task.deferred.resolve(false);
+                    });
+            }
+
+       $timeout(loop, 1);
+       var send = function(name){
+           var deferred = $q.defer();
+           pump.push({params:{
+                    method: 'GET',
+                    url: 'http://scmesos05:8702/MonitorCenterDataCenter1/Groups/by46?dt=1475141646277'
+                },deferred:deferred});
+            return deferred.promise;
+            // return $http.get('http://scmesos05:8702/MonitorCenterDataCenter/Groups/by46?dt=1475141646277')
+            // .then(function successCallback(response){
+            //     return $q.resolve(response);
+            // }, function failCallback(response){
+            //     return $q.reject(false);
+            // });
+       }
+       return {send:send};
+   });
+   </script>
+
+</html>

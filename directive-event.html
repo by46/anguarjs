@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body ng-controller="EventCtrl">
+    <p color="color">Color text</p>
+    <div dfis-editor on-click="editorClick" k-value="name">
+    </div>
+</body>
+
+<script type="text/javascript">
+   angular.module('Demo', []);
+
+   angular.module('Demo')
+   .controller('EventCtrl', function($scope){
+       $scope.color = 'red';
+       $scope.name = 'benjamin';
+       $scope.editorClick = function(event){
+           console.log(event);
+           $scope.name = 'benjamin 1';
+       }
+   })
+   .directive('dfisEditor', function(){
+       var link = function($scope, $element, $attrs){
+           console.log('in link,', $attrs);
+
+           var button = angular.element("<button>Click Me</button>");
+           button.bind("mousedown", $attrs.onClick);
+           button.html($scope.kValue);
+           $element.append(button);
+           $scope.$watch($attrs.kValue, function(new_value){
+               button.html(new_value);
+           });
+       }
+       return {link:link,
+           
+           restrict:'AE'};
+   });
+   </script>
+
+</html>

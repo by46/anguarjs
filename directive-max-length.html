@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-controller="CompileCtrl">
+        <div show-length>{{text}}</div>
+        <input ng-model="text">
+        <button ng-click="text='x'">Submit</button>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+            angular.module('Demo', []);
+
+            angular.module('Demo')
+            .controller('CompileCtrl', function($scope, $compile, $element) {
+            })
+            .directive('showLength', function(){
+                var func = function(element, attrs, link){
+                    return function(scope, ielement, iattrs, controller){
+                        var node = link(scope);
+                        // ielement.append(node);
+                        var lnode = $('<span></span>');
+                        ielement.prepend(lnode);
+                        scope.$watch(function(scope){
+                            lnode.text(node.text().length);
+                        });
+                    }
+                }
+                return {compile: func, 
+                    transclude:true,
+                    retrict:'E'};
+            });
+        </script>
+
+</html>

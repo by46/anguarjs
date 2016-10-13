@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body ng-controller="ColorCtrl">
+    <p color="color">Color text</p>
+    <color color="'red'">Color Text</color>
+</body>
+
+<script type="text/javascript">
+   angular.module('Demo', []);
+
+   angular.module('Demo')
+   .controller('ColorCtrl', function($scope){
+       $scope.color = 'red';
+   })
+   .directive('color', function(){
+       var link = function($scope, $element, $attrs){
+           $scope.$watch($attrs.color, function(new_color){
+                $element.css('color', new_color); 
+           });
+       }
+       return {link:link,
+           restrict:'AE'};
+   });
+   </script>
+
+</html>

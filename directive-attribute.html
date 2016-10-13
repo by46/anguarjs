@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html ng-app="Demo">
+
+<head>
+    <title>demo</title>
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-controller="CompileCtrl">
+        <test a="{{a}}" b c="xxx"></test>
+        <button ng-click='a=a+1'>Modified</button>
+        <test2 a="1" ys-a="123" ng-click="show(1)">This</test2>
+
+    </div>
+
+</body>
+
+<script type="text/javascript">
+            angular.module('Demo', []);
+
+            angular.module('Demo')
+            .controller('CompileCtrl', function($scope, $compile, $element) {
+                $scope.a = 123;
+            })
+            .directive('test', function(){
+                var func = function($element, $attrs){
+                    console.log($attrs);
+                    $attrs.$observe('a', function(new_value){
+                        console.log(new_value);
+                    });
+                }
+                return {compile: func, 
+                    retrict:'E'};
+            })
+            .directive('test2', function(){
+                var func = function($element, $attrs){
+                    $attrs.$set('b', 'ooo');
+                    $attrs.$set('a-b', '11');
+                    $attrs.$set('c-d', '11', true, 'c_d');
+                    $attrs.$set('style', 'color:red');
+                    console.log($attrs);
+                }
+
+                return {compile: func,
+                    restrict: 'E'};
+            });
+        </script>
+
+</html>
