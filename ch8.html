@@ -5,15 +5,61 @@
 </head>
 <body >
 <div ng-controller="MyController">
-    
+    <input type="text" ng-model="myUrl">
+    <d my-directive
+    my-url="myUrl"
+    my-link-text="Click me"></d>
+</div>
+<p> We can access: {{rootProperty}}</p>
+<div ng-controller="ParentController">
+    <p>We can access: {{rootProperty}} and {{parentProperty}}</p>
+    <p>Extra property: {{extra}}</p>
+    <div ng-controller="ChildController">
+        <p>
+            We can access:
+            {{rootProperty}} and
+            {{parentProperty}} and
+            {{childProperty}}
+        </p>
+        <p>{{fullSentenceFromChild}}</p>
+    </div>
 </div>
 </body>
     <script type="text/javascript">
 
-    var app = angular.module('Demo', ['ngMessages']);
+    var app = angular.module('Demo', []);
 
     app.controller('MyController', function($scope){
+
         
+    })
+    .directive('myDirective', function(){
+        return {
+            restrict: 'EA',
+            scope:{myUrl:'=', myLinkText:'@'},
+            template: '<input type="text" ng-model="myUrl" /><a href="{{myUrl}}">{{myLinkText}} </a>',
+            controller: function($scope, $timeout){
+                $timeout(function(){
+                    $scope.$apply(function(){
+                        $scope.myLinkText = 'SomeProperty';
+                    });
+                },1);
+            }
+        }
+    });
+
+    app.run(function($rootScope){
+        $rootScope.rootProperty = 'root scope';
+    })
+    .controller('ParentController', function($scope){
+        $scope.parentProperty= "parent scope";
+        $scope.extra ={msg:'extra property on parent controller'};
+    })
+    .controller('ChildController', function($scope){
+        $scope.extra.msg = 'extra property';
+        $scope.childProperty = "child scope";
+        $scope.fullSentenceFromChild = 'Same $scope: we can acess:' +
+        [$scope.rootProperty, $scope.parentProperty, $scope.childProperty].join(' and ');
     });
 
     </script>
