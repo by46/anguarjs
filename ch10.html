@@ -1,0 +1,39 @@
+<html ng-app="Demo">
+<head>
+    <title>chapter 10 - directive</title>
+    <script type="text/javascript" src="angular.1.4.6.min.js"></script>
+    <style type="text/css">
+        input.ng-invalid {
+            border: 1px solid red;
+        }
+        input.ng-valid {
+            border: 1px solid green;
+        }
+    </style>
+</head>
+<body >
+<div ng-init="myProperty='wow'">
+    Surrounding scope: {{myProperty}}
+    <div my-inherit-scope-directive></div>
+    <div my-directive></div>
+</div>
+</body>
+    <script type="text/javascript">
+
+    var app = angular.module('Demo', []);
+    app.directive('myInheritScopeDirective', function () {
+        return {
+            restrict:'A',
+            scope:true,
+            template:"Inside inherit scope directive {{myProperty}}"
+        };
+    })
+    .directive('myDirective', function(){
+        return {
+            restrict:'A',
+            scope:{},
+            template:'inside my directive, {{myProperty}}'
+        };
+    });
+    </script>
+</html> 

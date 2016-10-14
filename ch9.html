@@ -1,0 +1,100 @@
+<html ng-app="Demo">
+<head>
+    <title>chapter 8 - directive</title>
+    <script type="text/javascript" src="angular.1.4.6.min.js"></script>
+    <style type="text/css">
+        input.ng-invalid {
+            border: 1px solid red;
+        }
+        input.ng-valid {
+            border: 1px solid green;
+        }
+    </style>
+</head>
+<body >
+<div ng-controller="MyController">
+<div>
+    <input type="text" ng-model='name' placeholder="Name">
+    <textarea ng-disabled="isDisabled">Wait for 5 second</textarea>
+    <button ng-disabled="!name">Submit</button>
+</div>
+<div>
+    make read only for slibing
+    <input type="text" ng-model="txtReadOnly">
+    <input type="text" ng-disabled="!txtReadOnly">
+</div>
+<div>
+    <label for="marriage">Marriage = {{marriage}}</label>
+    <input id="marriage" type="checkbox" 
+    ng-checked="marriage"
+    ng-model="marriage"
+    ng-init="marriage=true">
+</div>
+<div>
+    Select two fish:
+    <input type="checkbox" ng-model="isTwoFish">
+    <select>
+        <option>One Fish</option>
+        <option ng-selected="isTwoFish">Two Fish</option>
+    </select>
+</div>
+<div>
+    <a href="{{ myHref }}">I'm feeling 404</a>
+</div>
+</div>
+<form name="signup_form" ng-controller="FormController"
+    ng-submit="submitForm()" novalidate>
+    <div ng-repeat="filed in fields" ng-form="signup_form_input" style="margin:2px;">
+        <input type="text" name="dynamic_input" 
+        required="true" ng-model='field.name' placeholder="{{field.placeholder}}">
+        <div ng-show="signup_form_input.dynamic_input.$dirty && signup_form_input.dynamic_input.$invalid">
+            <span class="error"
+                ng-show="signup_form_input.dynamic_input.$error.required">
+                    The field is required.
+                </span>
+        </div>
+    </div>
+    <button type="submit" ng-disabled="signup_form.$invalid">Submit All</button>
+</form>
+<div ng-controller="CityController">
+    <select ng-model='city' ng-options="city.name for city in cities">
+        <option value="">Select one City</option>
+    </select>
+    Best City: {{city.name}}
+    <svg>
+<circle ng-attr-cx="{{ cx }}"></circle>
+</svg>
+</div>
+</body>
+    <script type="text/javascript">
+
+    var app = angular.module('Demo', []);
+    app.run(function($rootScope, $timeout){
+        $timeout(function(){
+            $rootScope.myHref="http://www.baidu.com";
+        }, 2000);
+    });
+
+    app.controller('MyController', function($scope, $timeout){
+        $scope.isDisabled = true;
+        $timeout(function(){
+            $scope.isDisabled = false;
+        }, 5000);
+    });
+
+    app.controller('CityController', function($scope){
+        $scope.cities =  [{name:'beijing'}, {name:'chengdu'}];
+    });
+    app.controller('FormController', function($scope){
+        $scope.fields = [
+            {placeholder:'Name', isRequired:true},
+            {placeholder:'Password', isRequired:true},
+            {placeholder: 'Email (optional)', isRequired:false}];
+
+        $scope.submitForm = function(){
+            alert("it's work");
+        }
+    });
+
+    </script>
+</html> 
