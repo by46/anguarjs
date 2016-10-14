@@ -24,7 +24,7 @@
         <button ng-click="onButtonClick()">Change name</button> 
     </div>
     <div>{{name}}</div>
-    <div neg-bind-policy load-policy="working" unload-policy="name"></div>
+    <div neg-bind-policy load-policy="working" unload-policy="name" on-policy-click="onPolicyClick(email)"></div>
 </body>
 <script type="text/javascript">
 
@@ -33,6 +33,9 @@
         $scope.name = 'benjamin';
         $scope.onButtonClick = function(){
             $scope.name = 'wendy.y.xu';
+        }
+        $scope.onPolicyClick = function(email){
+            console.log(email);
         }
     });
     app.directive('myInheritScopeDirective', function () {
@@ -54,9 +57,15 @@
             restrict: 'A',
             scope: {
                 loadPolicy:'@',
-                unloadPolicy:'='
+                unloadPolicy:'=',
+                onPolicyClick:'&'
             },
-            template: "inside my neg-bind-policy, {{loadPolicy}} {{unloadPolicy}} <button ng-click='unloadPolicy=\"benjamin.c.yan\"'>Click me!</button>"
+            controller:function($scope){
+                $scope.onClick = function(){
+                    $scope.onPolicyClick({email:"benjamin.c.yan"});
+                }
+            },
+            template: "inside my neg-bind-policy, {{loadPolicy}} {{unloadPolicy}} <button ng-click='onClick()'>Click me!</button>"
         }
     });
     </script>
