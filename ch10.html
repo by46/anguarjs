@@ -1,4 +1,5 @@
 <html ng-app="Demo">
+
 <head>
     <title>chapter 10 - directive</title>
     <script type="text/javascript" src="angular.1.4.6.min.js"></script>
@@ -6,21 +7,34 @@
         input.ng-invalid {
             border: 1px solid red;
         }
+        
         input.ng-valid {
             border: 1px solid green;
         }
     </style>
 </head>
-<body >
-<div ng-init="myProperty='wow'">
-    Surrounding scope: {{myProperty}}
-    <div my-inherit-scope-directive></div>
-    <div my-directive></div>
-</div>
+
+<body ng-controller="DemoController">
+    <div ng-init="myProperty='wow'">
+        Surrounding scope: {{myProperty}}
+        <div my-inherit-scope-directive></div>
+        <div my-directive></div>
+    </div>
+    <div> 
+        <button ng-click="onButtonClick()">Change name</button> 
+    </div>
+    <div>{{name}}</div>
+    <div neg-bind-policy load-policy="working" unload-policy="name"></div>
 </body>
-    <script type="text/javascript">
+<script type="text/javascript">
 
     var app = angular.module('Demo', []);
+    app.controller('DemoController', function($scope){
+        $scope.name = 'benjamin';
+        $scope.onButtonClick = function(){
+            $scope.name = 'wendy.y.xu';
+        }
+    });
     app.directive('myInheritScopeDirective', function () {
         return {
             restrict:'A',
@@ -34,6 +48,17 @@
             scope:{},
             template:'inside my directive, {{myProperty}}'
         };
+    })
+    .directive('negBindPolicy', function(){
+        return {
+            restrict: 'A',
+            scope: {
+                loadPolicy:'@',
+                unloadPolicy:'='
+            },
+            template: "inside my neg-bind-policy, {{loadPolicy}} {{unloadPolicy}} <button ng-click='unloadPolicy=\"benjamin.c.yan\"'>Click me!</button>"
+        }
     });
     </script>
-</html> 
+
+</html>
